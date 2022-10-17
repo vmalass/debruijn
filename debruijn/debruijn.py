@@ -95,10 +95,10 @@ def build_kmer_dict(fastq_file, kmer_size):
 
 
 def build_graph(kmer_dict):
-    G = nx.Graph()
+    graph = nx.DiGraph()
     for key, value in kmer_dict.items():
-        G.add_edge(key[:-1], key[1:], weight=value)
-    return G
+        graph.add_edge(key[:-1], key[1:], weight = value)
+    return graph
 
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
