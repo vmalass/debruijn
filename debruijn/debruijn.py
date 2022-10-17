@@ -102,7 +102,16 @@ def build_graph(kmer_dict):
 
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
-    pass
+    for i in path_list:
+        if delete_entry_node and delete_sink_node is not True:
+            graph.remove_nodes_from(i[:-1])
+        elif delete_entry_node is not True and delete_sink_node:
+            graph.remove_nodes_from(i[1:])
+        elif delete_entry_node is not True and delete_sink_node is not True:
+            graph.remove_nodes_from(i[1:-1])
+        elif delete_entry_node and delete_sink_node:
+            graph.remove_nodes_from(i)
+        return graph 
 
 
 def std(data):
@@ -115,7 +124,7 @@ def select_best_path(graph, path_list, path_length, weight_avg_list,
 
 
 def path_average_weight(graph, path):
-    pass
+    return statistics.mean([d["weight"] for (u, v, d) in graph.subgraph(path).edges(data=True)])
 
 
 def solve_bubble(graph, ancestor_node, descendant_node):
