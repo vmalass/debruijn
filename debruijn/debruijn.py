@@ -86,17 +86,19 @@ def cut_kmer(read, kmer_size):
 def build_kmer_dict(fastq_file, kmer_size):
     kmer_dict = {}
     for i in read_fastq(fastq_file):
-        for j in cut_kmer(read, kmer_size):
-            kmer_dict.get(i[, j])
+        for j in cut_kmer(i, kmer_size):
+            if j in kmer_dict:
+                kmer_dict[j] += 1
+            else:
+                kmer_dict[j] = kmer_dict.get(j, 0) + 1
     return kmer_dict
 
 
-
-    
-
-
 def build_graph(kmer_dict):
-    pass
+    G = nx.Graph()
+    for key, value in kmer_dict.items():
+        G.add_edge(key[:-1], key[1:], weight=value)
+    return G
 
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
