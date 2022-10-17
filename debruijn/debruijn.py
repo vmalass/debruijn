@@ -70,15 +70,29 @@ def get_arguments():
 
 
 def read_fastq(fastq_file):
-    pass
+    with open(fastq_file, "r") as fasta:
+        for i in fasta:
+            yield next(fasta).strip()
+            next(fasta)
+            next(fasta)
 
 
 def cut_kmer(read, kmer_size):
-    pass
+    for i in range(len(read)):
+        if i + kmer_size <= len(read):
+            yield read[i:i + kmer_size]
 
 
 def build_kmer_dict(fastq_file, kmer_size):
-    pass
+    kmer_dict = {}
+    for i in read_fastq(fastq_file):
+        for j in cut_kmer(read, kmer_size):
+            kmer_dict.get(i[, j])
+    return kmer_dict
+
+
+
+    
 
 
 def build_graph(kmer_dict):
