@@ -143,20 +143,17 @@ def select_best_path(graph, path_list, path_length, weight_avg_list,
 
 
 def path_average_weight(graph, path):
-    return statistics.mean([d["weight"] for (u, v, d) in graph.subgraph(path).edges(data=True)])
+    return statistics.mean([d["weight"] for (_, _, d) in graph.subgraph(path).edges(data=True)])
 
 
 def solve_bubble(graph, ancestor_node, descendant_node):
-    if nx.has_path(graph, ancestor_node, descendant_node):
-        length_list = []
-        weight_avg_list = []
-        path = list(nx.all_simple_paths(graph, ancestor_node, descendant_node))
-        for subpath in path:
-            length_list.append(len(subpath))
-            weight_avg_list.append(path_average_weight(graph, subpath))
-        if len(weight_avg_list) > 1:
-            return select_best_path(graph, path, length_list, weight_avg_list)
-    return graph
+    all_paths = list(nx.all_simple_paths(graph,ancestor_node, descendant_node))
+    weights = []
+    lengths = []
+    for path in all_paths:
+        weights.append(path_average_weight(graph, path))
+        lengths.append(len(path))
+    return select_best_path(graph, all_paths, lengths, weights)
 
 
 def simplify_bubbles(graph):
