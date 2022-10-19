@@ -159,19 +159,16 @@ def solve_bubble(graph, ancestor_node, descendant_node):
 def simplify_bubbles(graph):
     bubble = False
     for node in graph.nodes:
-        node_predecessor = list(graph.predecessors(node))
-        nb_pred = len(node_predecessor)
-        if nb_pred > 1:
-            for i in range(nb_pred - 1):
-                for j in range(i + 1, nb_pred):
-                    node_ancestor = nx.lowest_common_ancestor(
-                        graph, node_predecessor[i], node_predecessor[j])
-                    if node_ancestor:
+        list_predecessor = list(graph.predecessors(node))
+        if len(list_predecessor) > 1:
+            for i in range(len(list_predecessor) - 1):
+                for j in range(i + 1, len(list_predecessor)):
+                    ancestor_node = nx.lowest_common_ancestor(graph, list_predecessor[i], list_predecessor[j])
+                    if ancestor_node:
                         bubble = True
                         break
             if bubble:
-                graph = simplify_bubbles(
-                    solve_bubble(graph, node_ancestor, node))
+                graph = simplify_bubbles(solve_bubble(graph, ancestor_node, node))
                 break
     return graph
 
