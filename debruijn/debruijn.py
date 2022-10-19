@@ -120,25 +120,25 @@ def std(data):
 
 def select_best_path(graph, path_list, path_length, weight_avg_list, 
                      delete_entry_node=False, delete_sink_node=False):
-    cpath = []
+    list_path = []
     for first_path in range(len(path_list)):
         for second_path in range((first_path + 1), len(path_list)):
-            std_len = std([path_length[first_path], path_length[second_path]])
+            std_length = std([path_length[first_path], path_length[second_path]])
             std_weight = std([weight_avg_list[first_path], weight_avg_list[second_path]])
-            if std_len == 0 and std_weight == 0:
+            if std_length == 0 and std_weight == 0:
                 rdm = random.randint([first_path, second_path])
-                cpath.append(path_list[rdm])
-            elif std_len != 0 and std_weight == 0:
+                list_path.append(path_list[rdm])
+            elif std_length != 0 and std_weight == 0:
                 if path_length[first_path] > path_length[second_path]:
-                    cpath.append(path_list[second_path])
+                    list_path.append(path_list[second_path])
                 else:
-                    cpath.append(path_list[first_path])
+                    list_path.append(path_list[first_path])
             else:
                 if weight_avg_list[first_path] > weight_avg_list[second_path]:
-                    cpath.append(path_list[second_path])
+                    list_path.append(path_list[second_path])
                 else:
-                    cpath.append(path_list[first_path])
-    remove_paths(graph, cpath, delete_entry_node, delete_sink_node)
+                    list_path.append(path_list[first_path])
+    remove_paths(graph, list_path, delete_entry_node, delete_sink_node)
     return graph
 
 
@@ -191,7 +191,8 @@ def solve_out_tips(graph, ending_nodes):
 def get_starting_nodes(graph):
     starting = []
     for node in graph.nodes:
-        if not list(graph.predecessors(node)):
+        predecessors = list(graph.predecessors(node))
+        if not predecessors:
             starting.append(node)
     return starting
 
@@ -199,7 +200,8 @@ def get_starting_nodes(graph):
 def get_sink_nodes(graph):
     sink = []
     for node in graph.nodes:
-        if not list(graph.successors(node)):
+        successors = list(graph.successors(node))
+        if not successors:
             sink.append(node)
     return sink
 
