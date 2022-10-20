@@ -126,7 +126,7 @@ def select_best_path(graph, path_list, path_length, weight_avg_list,
             std_length = std([path_length[first_path], path_length[second_path]])
             std_weight = std([weight_avg_list[first_path], weight_avg_list[second_path]])
             if std_length == 0 and std_weight == 0:
-                rdm = random.randint([first_path, second_path])
+                rdm = randint([first_path, second_path])
                 list_path.append(path_list[rdm])
             elif std_length != 0 and std_weight == 0:
                 if path_length[first_path] > path_length[second_path]:
@@ -178,9 +178,9 @@ def solve_entry_tips(graph, starting_nodes):
     wei_path = []
     len_path = []
     for node in starting_nodes:
-        for descendant in nx.descendants(graph, node):
-            predecessors = list(graph.predecessors(descendant))
-            if len(predecessors) > 1:
+        for descendant in nx.descendants(graph, node):  # descendants(G, source) Returns all nodes reachable from source in G.
+            predecessor = list(graph.predecessors(descendant))
+            if len(predecessor) > 1:
                 for path in nx.all_simple_paths(graph, node, descendant):
                     lst_path.append(path)
                     len_path.append(len(path))
@@ -194,22 +194,22 @@ def solve_out_tips(graph, ending_nodes):
     wei_path = []
     len_path = []
     for node in ending_nodes:
-        for ancestor in nx.ancestors(graph, node):
+        for ancestor in nx.ancestors(graph, node):  # ancestors(G, source) Returns all nodes having a path to source in G.
             successor = list(graph.successors(ancestor))
             if len(successor) > 1:
                 for path in nx.all_simple_paths(graph, node, ancestor):
                     lst_path.append(path)
                     len_path.append(len(path))
                     wei_path.append(path_average_weight(graph, path))
-    graph = select_best_path(graph, lst_path, len_path, wei_path, False, False)
-    return(graph) 
+    graph = select_best_path(graph, lst_path, len_path, wei_path, False, True)
+    return(graph)
 
 
 def get_starting_nodes(graph):
     starting = []
     for node in graph.nodes:
-        predecessors = list(graph.predecessors(node))
-        if not predecessors:
+        predecessor = list(graph.predecessors(node))
+        if not predecessor:
             starting.append(node)
     return starting
 
@@ -217,8 +217,8 @@ def get_starting_nodes(graph):
 def get_sink_nodes(graph):
     sink = []
     for node in graph.nodes:
-        successors = list(graph.successors(node))
-        if not successors:
+        successor = list(graph.successors(node))
+        if not successor:
             sink.append(node)
     return sink
 
@@ -283,6 +283,19 @@ def main():
     """
     # Get arguments
     args = get_arguments()
+    #Lecture du fichier et construction du graphe:
+    dic_kmer = build_kmer_dict(args.fastq_file, args.kmer_size)
+    graph = build_graph(dic_kmer)
+    starting_nodes = get_starting_nodes(graph)
+    sink_nodes = get_sink_nodes(graph)
+    #Résolution des bulles:
+    simplify_bubbles = simplify_bubbles(graph)
+    #Resolution des points d'entrée et de sortie
+    entry_tips = solve_entry_tips(simplify_bubbles, starting_nodes)
+    out_tips = solve_out_tips(entry_tips, sink_nodes)
+    #Ecriture des contigs:
+    contigs = get_contigs(out_tips, starting_nodes, sink_nodes)
+    save_contigs(contigs, args.output_file)
 
     # Fonctions de dessin du graphe
     # A decommenter si vous souhaitez visualiser un petit 
